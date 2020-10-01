@@ -2,15 +2,46 @@ import React from 'react';
 
 import './App.css';
 
-function Card() {
+function Card(props) {
+  const style = {
+    'width': '18rem',
+  };
+
   return (
-    <div className="card" style={{ width: 18 + 'rem' }}>
-      <div class="card-body">
-        <h5 className="card-title">Card title</h5>
-        <p classNmae="card-text">Card body</p>
+    <div className="card" style={style}>
+      <div className="card-body">
+        <h5 className="card-title">{props.title}</h5>
+        <p className="card-text">{props.body}</p>
       </div>
     </div>
   );
+}
+
+class Box extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  generateCards() {
+    const cards = [
+      { title: 't', body: 'b' },
+      { title: 't', body: 'b' },
+    ]
+
+    return cards.slice(0).map((card, index) => {
+      return (
+        < Card title={card.title} body={card.body} key={index} />
+      );
+    })
+  }
+
+  render() {
+    return (
+      <div className="Box">
+        {this.generateCards()}
+      </div>
+    );
+  }
 }
 
 function App() {
@@ -19,7 +50,13 @@ function App() {
       <div className="container">
         <div className="row">
           <div className="col">
-            < Card />
+            <Box />
+          </div>
+          <div className="col">
+            <Box />
+          </div>
+          <div className="col">
+            <Box />
           </div>
         </div>
       </div>
