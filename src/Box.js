@@ -40,12 +40,12 @@ function PreviewCard(props) {
         <p className="card-text">{props.card.description}</p>
         <p className="card-level">{props.card.level}</p>
       </div> */}
-      <div class="flip-card">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
+      <div className="flip-card">
+        <div className="flip-card-inner">
+          <div className="flip-card-front">
             <h5 className="card-title">{props.card.title}</h5>
           </div>
-          <div class="flip-card-back">
+          <div className="flip-card-back">
             {/* <h5 className="card-title">{props.card.title}</h5> */}
             <p className="card-text">{props.card.description}</p>
             <p className="card-level">{props.card.level}</p>
@@ -62,6 +62,12 @@ function Card(props) {
   )
 }
 
+function Deck(props) {
+  return (
+    <li>Lvl {props.level} - {props.count}</li>
+  )
+}
+
 export class Box extends React.Component {
   constructor(props) {
     super(props);
@@ -69,11 +75,27 @@ export class Box extends React.Component {
 
   render() {
     const rows = [];
+    let lvlCount = new Map(); // level => card count
     cards.forEach(c => {
       rows.push(<Card title={c.title} level={c.level} key={c.title} />);
+
+      let count = 0;
+      if (lvlCount.has(c.level)) {
+        count = lvlCount.get(c.level);
+      }
+      lvlCount.set(c.level, count + 1);
     });
+
+    let decks = [];
+    for (let lvl = 1; lvl <= 7; lvl++) {
+      decks.push(<Deck level={lvl} count={lvlCount.get(lvl)} />);
+    }
+
     return (<div>
       <h3>Leitner Box</h3>
+      <ul>
+        {decks}
+      </ul>
       <ul>
         {rows}
       </ul>
