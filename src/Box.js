@@ -58,13 +58,17 @@ function PreviewCard(props) {
 
 function Card(props) {
   return (
-    <li>{props.title} - {props.level}</li>
-  )
-}
-
-function Deck(props) {
-  return (
-    <li>Lvl {props.level} - {props.count}</li>
+    <div>
+      <p>{props.title}</p>
+      <p>{props.description}</p>
+      <button onClick={() => props.handleBackDown(props.level)}>
+        Failed
+      </button>
+      <button onClick={() => props.handleLevelUp(props.level)}>
+        Pass
+      </button>
+    </div>
+    // <li>{props.title} - {props.level}</li>
   )
 }
 
@@ -103,44 +107,78 @@ function toReview(day) {
 export class Box extends React.Component {
   constructor(props) {
     super(props);
+
+    let lvlCount = new Array(); // level => card count
+    for (let lvl = 1; lvl <= 7; lvl++) {
+      lvlCount.push(0);
+    }
+
+    cards.forEach(c => {
+      lvlCount[c.level - 1] += 1;
+    });
+
+    this.state = {
+      activeCard: 2,
+      levelCount: lvlCount,
+    }
+
+    this.levelUp = this.levelUp.bind(this);
+  }
+
+  backDown(lvl) {
+    if (lvl > 1) {
+      const levelCount = this.state.levelCount.slice();
+      levelCount[lvl - 1] -= 1;
+      levelCount[0] += 1;
+      this.setState({ levelCount: levelCount });
+    }
+  }
+
+  levelUp(lvl) {
+    if (lvl < 7) {
+      const levelCount = this.state.levelCount.slice();
+      levelCount[lvl - 1] -= 1;
+      levelCount[lvl] += 1;
+      this.setState({ levelCount: levelCount });
+    }
   }
 
   render() {
-    const rows = [];
-    let lvlCount = new Map(); // level => card count
-    cards.forEach(c => {
-      rows.push(<Card title={c.title} level={c.level} key={c.title} />);
+    // const rows = [];
 
-      let count = 0;
-      if (lvlCount.has(c.level)) {
-        count = lvlCount.get(c.level);
-      }
-      lvlCount.set(c.level, count + 1);
-    });
-
-    let decks = [];
+    let levels = [];
+    let levelCount = this.state.levelCount;
     for (let lvl = 1; lvl <= 7; lvl++) {
-      decks.push(<Deck level={lvl} count={lvlCount.get(lvl)} key={lvl} />);
+      levels.push(<li key={lvl}>{levelCount[lvl - 1]}</li>);
     }
 
-    let reviewSchedule = [];
-    for (let d = 1; d <= 64; d++) {
-      let reviewLvl = toReview(d);
-      reviewSchedule.push(<li key={d}>{reviewLvl.join('-')}</li>)
-    }
+    // let reviewSchedule = [];
+    // for (let d = 1; d <= 64; d++) {
+    //   let reviewLvl = toReview(d);
+    //   reviewSchedule.push(<li key={d}>{reviewLvl.join('-')}</li>)
+    // }
+
+    let card = cards[this.state.activeCard];
 
     return (<div>
       <h3>Leitner Box</h3>
       <ol>
-        {reviewSchedule}
+        {levels}
       </ol>
-      <ul>
-        {decks}
-      </ul>
-      <ul>
-        {rows}
-      </ul>
-      <PreviewCard card={cards[0]} />
+      <Card
+        title={card.title}
+        description={card.description}
+        level={card.level}
+        handleBackDown={(lvl) => this.backDown(lvl)}
+        handleLevelUp={(lvl) => this.levelUp(lvl)}
+      />
+      {/* <PreviewCard card={cards[0]} /> */}
+      {/* <button onClick={() => this.backDown(2)}>
+        Failed
+      </button>
+      <button onClick={() => this.levelUp(1)}>
+        Pass
+      </button> */}
     </div>
     )
   }
